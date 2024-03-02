@@ -6,3 +6,18 @@ dist/
 
 # Rust files
 target
+
+# C# target object files
+/csharp/.vs/
+/csharp/example/obj/Debug/
+/csharp/example/obj/Release/
+/csharp/Debug/
+/csharp/Release/
+/csharp/ruapu-c/Debug/
+/csharp/ruapu-c/Release/
+/csharp/ruapu-c/x64/Debug/
+/csharp/ruapu-c/x64/Release/
+/csharp/x64/Debug/
+/csharp/x64/Release/
+/csharp/ruapu-wrapping/obj/Debug/
+/csharp/ruapu-wrapping/obj/Release/
