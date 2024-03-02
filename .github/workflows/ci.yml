@@ -166,6 +166,15 @@ jobs:
         cd go
         go build -o ruapu-go.exe
         ./ruapu-go.exe
+    - name: build-test-csharp
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '4.7.x'
+      run: |
+        cd csharp
+        MSBuild ruapu-binding.sln /t:Rebuild /p:Configuration=Release /p:Platform=x64
+        cd Release/
+        ./example.exe
 
   qemu:
     runs-on: ubuntu-latest
