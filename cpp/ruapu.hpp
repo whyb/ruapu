@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <list>
+#include <mutex>
 #include <string>
 #include <string_view>
 
@@ -39,10 +40,12 @@ public:
 
 private:
     static void init() noexcept {
-        static int initialised = 0;
+        static bool initialised = false;
+        static std::mutex mutex;
+        const std::lock_guard<std::mutex> lock(mutex);
         if (!initialised) {
             ruapu_init();
-            initialised = 1;
+            initialised = true;
         }
     }
 
