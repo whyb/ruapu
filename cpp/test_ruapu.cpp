@@ -1,0 +1,120 @@
+#include <iostream>
+
+#define RUAPU_IMPLEMENTATION
+#include "ruapu.hpp"
+
+#define PRINT_ISA_SUPPORT_CPP(isa) std::cout << #isa << " = " << (ruapu::support(#isa) ? "True" : "False") << std::endl;
+
+int main()
+{
+    using namespace nihui;
+
+#if defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(_M_X64)
+    PRINT_ISA_SUPPORT_CPP(mmx)
+    PRINT_ISA_SUPPORT_CPP(sse)
+    PRINT_ISA_SUPPORT_CPP(sse2)
+    PRINT_ISA_SUPPORT_CPP(sse3)
+    PRINT_ISA_SUPPORT_CPP(ssse3)
+    PRINT_ISA_SUPPORT_CPP(sse41)
+    PRINT_ISA_SUPPORT_CPP(sse42)
+    PRINT_ISA_SUPPORT_CPP(sse4a)
+    PRINT_ISA_SUPPORT_CPP(xop)
+    PRINT_ISA_SUPPORT_CPP(avx)
+    PRINT_ISA_SUPPORT_CPP(f16c)
+    PRINT_ISA_SUPPORT_CPP(fma)
+    PRINT_ISA_SUPPORT_CPP(fma4)
+    PRINT_ISA_SUPPORT_CPP(avx2)
+    PRINT_ISA_SUPPORT_CPP(avx512f)
+    PRINT_ISA_SUPPORT_CPP(avx512bw)
+    PRINT_ISA_SUPPORT_CPP(avx512cd)
+    PRINT_ISA_SUPPORT_CPP(avx512dq)
+    PRINT_ISA_SUPPORT_CPP(avx512vl)
+    PRINT_ISA_SUPPORT_CPP(avx512vnni)
+    PRINT_ISA_SUPPORT_CPP(avx512bf16)
+    PRINT_ISA_SUPPORT_CPP(avx512ifma)
+    PRINT_ISA_SUPPORT_CPP(avx512vbmi)
+    PRINT_ISA_SUPPORT_CPP(avx512vbmi2)
+    PRINT_ISA_SUPPORT_CPP(avx512fp16)
+    PRINT_ISA_SUPPORT_CPP(avx512er)
+    PRINT_ISA_SUPPORT_CPP(avx5124fmaps)
+    PRINT_ISA_SUPPORT_CPP(avx5124vnniw)
+    PRINT_ISA_SUPPORT_CPP(avxvnni)
+    PRINT_ISA_SUPPORT_CPP(avxvnniint8)
+    PRINT_ISA_SUPPORT_CPP(avxifma)
+    PRINT_ISA_SUPPORT_CPP(amxfp16)
+    PRINT_ISA_SUPPORT_CPP(amxbf16)
+    PRINT_ISA_SUPPORT_CPP(amxint8)
+    PRINT_ISA_SUPPORT_CPP(amxtile)
+
+
+#elif __aarch64__ || defined(_M_ARM64)
+    PRINT_ISA_SUPPORT_CPP(neon)
+    PRINT_ISA_SUPPORT_CPP(vfpv4)
+    PRINT_ISA_SUPPORT_CPP(cpuid)
+    PRINT_ISA_SUPPORT_CPP(asimdrdm)
+    PRINT_ISA_SUPPORT_CPP(asimdhp)
+    PRINT_ISA_SUPPORT_CPP(asimddp)
+    PRINT_ISA_SUPPORT_CPP(asimdfhm)
+    PRINT_ISA_SUPPORT_CPP(bf16)
+    PRINT_ISA_SUPPORT_CPP(i8mm)
+    PRINT_ISA_SUPPORT_CPP(mte)
+    PRINT_ISA_SUPPORT_CPP(sve)
+    PRINT_ISA_SUPPORT_CPP(sve2)
+    PRINT_ISA_SUPPORT_CPP(svebf16)
+    PRINT_ISA_SUPPORT_CPP(svei8mm)
+    PRINT_ISA_SUPPORT_CPP(svef32mm)
+    PRINT_ISA_SUPPORT_CPP(pmull)
+    PRINT_ISA_SUPPORT_CPP(crc32)
+    PRINT_ISA_SUPPORT_CPP(aes)
+    PRINT_ISA_SUPPORT_CPP(sha1)
+    PRINT_ISA_SUPPORT_CPP(sha2)
+    PRINT_ISA_SUPPORT_CPP(sha3)
+    PRINT_ISA_SUPPORT_CPP(sha512)
+    PRINT_ISA_SUPPORT_CPP(sm3)
+    PRINT_ISA_SUPPORT_CPP(sm4)
+    PRINT_ISA_SUPPORT_CPP(amx)
+
+#elif __arm__ || defined(_M_ARM)
+    PRINT_ISA_SUPPORT_CPP(half)
+    PRINT_ISA_SUPPORT_CPP(edsp)
+    PRINT_ISA_SUPPORT_CPP(neon)
+    PRINT_ISA_SUPPORT_CPP(vfpv4)
+    PRINT_ISA_SUPPORT_CPP(idiv)
+
+#elif __mips__
+    PRINT_ISA_SUPPORT_CPP(msa)
+
+#elif __powerpc__
+    PRINT_ISA_SUPPORT_CPP(vsx)
+
+#elif __s390x__
+    PRINT_ISA_SUPPORT_CPP(zvector)
+
+#elif __loongarch__
+    PRINT_ISA_SUPPORT_CPP(lsx)
+    PRINT_ISA_SUPPORT_CPP(lasx)
+
+#elif __riscv
+    PRINT_ISA_SUPPORT_CPP(i)
+    PRINT_ISA_SUPPORT_CPP(m)
+    PRINT_ISA_SUPPORT_CPP(a)
+    PRINT_ISA_SUPPORT_CPP(f)
+    PRINT_ISA_SUPPORT_CPP(d)
+    PRINT_ISA_SUPPORT_CPP(c)
+    PRINT_ISA_SUPPORT_CPP(zfa)
+    PRINT_ISA_SUPPORT_CPP(zfh)
+    PRINT_ISA_SUPPORT_CPP(zfhmin)
+    PRINT_ISA_SUPPORT_CPP(zicsr)
+    PRINT_ISA_SUPPORT_CPP(zifencei)
+
+#elif __openrisc__
+    PRINT_ISA_SUPPORT_CPP(orbis32)
+    PRINT_ISA_SUPPORT_CPP(orbis64)
+    PRINT_ISA_SUPPORT_CPP(orfpx32)
+    PRINT_ISA_SUPPORT_CPP(orfpx64)
+    PRINT_ISA_SUPPORT_CPP(orvdx64)
+
+#endif
+
+    return 0;
+}
