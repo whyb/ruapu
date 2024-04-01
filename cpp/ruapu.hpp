@@ -13,8 +13,17 @@ namespace nihui {
 
 // Implementing a Thread-Safe Singleton with C++11 Using Magic Static Singleton
 class ruapu {
+private:
+    ruapu(){
+        static bool initialised = false;
+        static std::mutex mutex;
+        const std::lock_guard<std::mutex> lock(mutex);
+        if (!initialised) {
+            ruapu_init();
+            initialised = true;
+        }
+    }
 public:
-    ruapu() = default;
     ~ruapu() = default;
     ruapu(const ruapu &) = delete;
     ruapu &operator=(const ruapu &) = delete;
@@ -22,12 +31,12 @@ public:
     ruapu &operator=(ruapu &&) = delete;
 
     static bool support(const std::string& isa) noexcept {
-        init();
+        ruapu();
         return ruapu_supports(isa.c_str()) == 1;
     }
 
     static std::unique_ptr<std::list<std::string_view>> rua() noexcept {
-        init();
+        ruapu();
         auto ptr = std::make_unique<std::list<std::string_view>>();
         const char* const* supported = ruapu_rua();
         while (*supported) {
@@ -38,16 +47,6 @@ public:
         return ptr;
     }
 
-private:
-    static void init() noexcept {
-        static bool initialised = false;
-        static std::mutex mutex;
-        const std::lock_guard<std::mutex> lock(mutex);
-        if (!initialised) {
-            ruapu_init();
-            initialised = true;
-        }
-    }
-
 };
 }
+
