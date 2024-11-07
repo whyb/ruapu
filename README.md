@@ -7,7 +7,7 @@ Detect CPU ISA features with single-file
 
 <table>
 <tr><td>CPU</td><td>&#9989; x86, x86-64<br/>&#9989; arm, aarch64<br/>&#9989; mips<br/>&#9989; powerpc<br/>&#9989; s390x<br/>&#9989; loongarch<br/>&#9989; risc-v<br/>&#9989; openrisc</td><td rowspan=3>
-  
+
 ```c
 #define RUAPU_IMPLEMENTATION
 #include "ruapu.h"
@@ -43,6 +43,35 @@ int main()
 2. `ruapu.c` is **ONLY** `#define RUAPU_IMPLEMENTATION` and `#include "ruapu.h"`
 3. Other sources `#include "ruapu.h"` but **NO** `#define RUAPU_IMPLEMENTATION`
 
+## Features
+
+* Detect **CPU ISA with single-file**&emsp;&emsp;&emsp;
+  _`sse2`, `avx`, `avx512f`, `neon`, etc._
+* Detect **vendor extended ISA**&emsp;&emsp;&emsp;&emsp;
+  _apple `amx`, risc-v vendor ISA, etc._
+* Detect **richer ISA on Windows ARM**&emsp;&emsp;
+  _`IsProcessorFeaturePresent()` returns little ISA information_
+* Detect **`x86-avx512` on macOS correctly**&emsp;
+  _macOS hides it in `cpuid`_
+* Detect **new CPU's ISA on old systems**&emsp;
+  _they are usually not exposed in `auxv` or `MISA`_
+* Detect **CPU hidden ISA**&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+  _`fma4` on zen1, ISA in hypervisor, etc._
+
+## Supported ISA _&emsp;(more is comming ... :)_
+
+|CPU|ISA|
+|:---:|---|
+|x86|`mmx` `sse` `sse2` `sse3` `ssse3` `sse41` `sse42` `sse4a` `xop` `avx` `f16c` `fma` `fma4` `avx2` `avx512f` `avx512bw` `avx512cd` `avx512dq` `avx512vl` `avx512vnni` `avx512bf16` `avx512ifma` `avx512vbmi` `avx512vbmi2` `avx512fp16` `avx512er` `avx5124fmaps` `avx5124vnniw` `avxvnni` `avxvnniint8` `avxvnniint16` `avxifma` `avxneconvert` `amxfp16` `amxbf16` `amxint8` `amxtile` `bmi1` `bmi2` `gfni` `aesni` `vaes` `sha1` `sha256` `sha512` `sm3` `sm4` `rdrand` `rdseed` `tsx`|
+|arm|`half` `edsp` `neon` `vfpv4` `idiv`|
+|aarch64|`neon` `vfpv4` `lse` `cpuid` `asimdrdm` `asimdhp` `asimddp` `asimdfhm` `bf16` `i8mm` `frint` `jscvt` `fcma` `mte` `mte2` `sve` `sve2` `svebf16` `svei8mm` `svef32mm` `svef64mm` `sme` `smef16f16` `smef64f64` `smei64i64` `pmull` `crc32` `aes` `sha1` `sha2` `sha3` `sha512` `sm3` `sm4` `svepmull` `svebitperm` `sveaes` `svesha3` `svesm4` `amx`|
+|mips|`msa` `mmi` `sx` `asx` `msa2` `crypto`|
+|powerpc|`vsx`|
+|s390x|`zvector`|
+|loongarch|`lsx` `lasx`|
+|risc-v|`i` `m` `a` `f` `d` `c` `v` `zba` `zbb` `zbc` `zbs` `zbkb` `zbkc` `zbkx` `zcb` `zfa` `zfbfmin` `zfh` `zfhmin` `zicond` `zicsr` `zifencei` `zmmul` `zvbb` `zvbc` `zvfh` `zvfhmin` `zvfbfmin` `zvfbfwma` `zvkb` `zvl32b` `zvl64b` `zvl128b` `zvl256b` `zvl512b` `zvl1024b` `xtheadba` `xtheadbb` `xtheadbs` `xtheadcondmov` `xtheadfmemidx` `xtheadfmv` `xtheadmac` `xtheadmemidx` `xtheadmempair` `xtheadsync` `xtheadvdot` `spacemitvmadot` `spacemitvmadotn` `spacemitvfmadot`|
+|openrisc| `orbis32` `orbis64` `orfpx32` `orfpx64` `orvdx64` |
+
 ## Let's ruapu
 
 ### ruapu with C
@@ -71,7 +100,7 @@ cl.exe /Fe: ruapu.exe main.c
 Run ruapu in command line
 
 ```shell
-./ruapu 
+./ruapu
 mmx = 1
 sse = 1
 sse2 = 1
@@ -327,7 +356,7 @@ import Ruapu
 main = do
     Ruapu.init
     Ruapu.supports "mmx" >>= putStrLn . show
-    Ruapu.rua >>= foldl (\m x -> m >> putStrLn x) (return ())
+    Ruapu.rua >>= sequence_ . map putStrLn
 ```
 </td></tr>
 </table>
@@ -419,6 +448,151 @@ end.
       
 ```
 
+</td></tr>
+</table>
+
+### ruapu with Java
+
+<table>
+
+<tr><td>
+
+Compile ruapu library and example
+
+```shell
+./gradlew build
+```
+Run example
+```shell
+java -cp \
+    ./build/libs/ruapu-1.0-SNAPSHOT.jar \
+    ./Example.java
+```
+
+</td>
+<td>
+
+
+Use ruapu in Java
+
+```java
+import ruapu.Ruapu;
+import java.util.*;
+
+class Example {
+    public static void main(String args[]) {
+        Ruapu ruapu = new Ruapu();
+        
+        System.out.println("avx: " + ruapu.supports("avx")); 
+        // avx: 1
+        System.out.println(Arrays.toString(ruapu.rua())); 
+        // [mmx, sse, sse2, sse3, ssse3, sse41, sse42, avx, f16c, fma, avx2]
+    }
+}
+      
+```
+
+
+
+
+</td></tr>
+</table>
+
+### ruapu with cangjie
+
+<table>
+
+<tr><td>
+
+Compile ruapu library
+
+```bash
+cd cangjie
+cd c-src
+cmake .
+make
+```
+run example
+```bash
+cd cangjie
+cjpm run
+```
+or compile example
+```bash
+cd cangjie
+cjpm build
+./target/release/bin/main
+```
+
+</td>
+<td>
+Use ruapu in cangjie
+
+```swift
+import ruapu.*
+main(): Int64 {
+    ruapu_init()
+    let neon_supported = ruapu_supports("neon")
+    println("supports neon: ${neon_supported}") 
+    let d = ruapu_rua()
+    for (i in d) {
+        println(i)
+    }
+    return 0
+}
+```
+</td></tr>
+</table>
+
+
+### ruapu with Dart
+
+<table>
+
+<tr><td>
+
+Compile ruapu library
+
+```bash
+cd dart
+bash build.sh
+```
+
+</td>
+<td>
+Use ruapu in dart
+
+```dart
+void main() {
+  var libraryPath =
+  path.join(Directory.current.path, 'build', 'libruapu.so');
+
+  if (Platform.isMacOS) {
+    libraryPath =
+        path.join(Directory.current.path, 'build', 'libruapu.dylib');
+  }
+
+  if (Platform.isWindows) {
+    libraryPath = path.join(
+        Directory.current.path, 'build', 'Debug', 'ruapu.dll');
+  }
+
+  Ruapu ruapu = Ruapu(libraryPath);
+
+  ruapu.init();
+
+  List<String> isas = ruapu.rua();
+  print("This CPU Support:");
+  for (String isa in isas) {
+    print(isa);
+  }
+  print("=================");
+
+  String isaToCheck = 'aes';
+  bool isSupported = ruapu.supports(isaToCheck);
+  print('Does the system support $isaToCheck? $isSupported');
+}
+```
 </td></tr>
 </table>
 
@@ -612,36 +786,6 @@ amxtile = 0
 
 </details>
 
-
-## Features
-
-* Detect **CPU ISA with single-file**&emsp;&emsp;&emsp;
-_`sse2`, `avx`, `avx512f`, `neon`, etc._
-* Detect **vendor extended ISA**&emsp;&emsp;&emsp;&emsp;
-_apple `amx`, risc-v vendor ISA, etc._
-* Detect **richer ISA on Windows ARM**&emsp;&emsp;
-_`IsProcessorFeaturePresent()` returns little ISA information_
-* Detect **`x86-avx512` on macOS correctly**&emsp;
-_macOS hides it in `cpuid`_
-* Detect **new CPU's ISA on old systems**&emsp;
-_they are usually not exposed in `auxv` or `MISA`_
-* Detect **CPU hidden ISA**&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-_`fma4` on zen1, ISA in hypervisor, etc._
-
-## Supported ISA _&emsp;(more is comming ... :)_
-
-|CPU|ISA|
-|:---:|---|
-|x86|`mmx` `sse` `sse2` `sse3` `ssse3` `sse41` `sse42` `sse4a` `xop` `avx` `f16c` `fma` `fma4` `avx2` `avx512f` `avx512bw` `avx512cd` `avx512dq` `avx512vl` `avx512vnni` `avx512bf16` `avx512ifma` `avx512vbmi` `avx512vbmi2` `avx512fp16` `avx512er` `avx5124fmaps` `avx5124vnniw` `avxvnni` `avxvnniint8` `avxifma` `amxfp16` `amxbf16` `amxint8` `amxtile`|
-|arm|`half` `edsp` `neon` `vfpv4` `idiv`|
-|aarch64|`neon` `vfpv4` `cpuid` `asimdrdm` `asimdhp` `asimddp` `asimdfhm` `bf16` `i8mm` `mte` `sve` `sve2` `svebf16` `svei8mm` `svef32mm` `pmull` `crc32` `aes` `sha1` `sha2` `sha3` `sha512` `sm3` `sm4` `amx`|
-|mips|`msa`|
-|powerpc|`vsx`|
-|s390x|`zvector`|
-|loongarch|`lsx` `lasx`|
-|risc-v|`i` `m` `a` `f` `d` `c` `zfa` `zfh` `zfhmin` `zicsr` `zifencei` `zmmul` |
-|openrisc| `orbis32` `orbis64` `orfpx32` `orfpx64` `orvdx64` |
-
 ## Techniques inside ruapu
 ruapu is implemented in C language to ensure the widest possible portability.
 
@@ -676,6 +820,11 @@ ruapu determines whether the CPU supports certain instruction sets by trying to 
 * [libllm](https://github.com/ling0322/libllm) &emsp;_Efficient inference of large language models_
 
 ## Credits
+<a href="https://github.com/nihui/ruapu/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=nihui/ruapu" />
+</a>
+
+### Contribution behavior
 * [@nihui](https://github.com/nihui) &emsp;_Write the initial POC code and ruapu maintainer_
 * [@kernelbin](https://github.com/kernelbin) &emsp;_Implement exception handling for Windows_
 * [@zchrissirhcz](https://github.com/zchrissirhcz) &emsp;_Detect x86 FMA4_
@@ -687,7 +836,7 @@ ruapu determines whether the CPU supports certain instruction sets by trying to 
 * [@dreamcmi](https://github.com/dreamcmi) &emsp;_Detect more risc-v ISA_
 * [@cocoa-xu](https://github.com/cocoa-xu) &emsp;_Add FreeBSD support, python support_
 * [@YuzukiTsuru](https://github.com/YuzukiTsuru) &emsp;_Add OpenRISC support_
-* [@whyb](https://github.com/whyb) &emsp;_Detect x86 AMX_
+* [@whyb](https://github.com/whyb) &emsp;_Detect more x86 AMX*, SHA*, AVX512*, SM*_
 
 ## License
 MIT License
