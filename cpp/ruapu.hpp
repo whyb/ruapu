@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <list>
-#include <mutex>
 #include <string>
 #include <string_view>
 
@@ -15,13 +14,7 @@ namespace nihui {
 class ruapu {
 private:
     ruapu(){
-        static bool initialised = false;
-        static std::mutex mutex;
-        const std::lock_guard<std::mutex> lock(mutex);
-        if (!initialised) {
-            ruapu_init();
-            initialised = true;
-        }
+        static bool init([](){ruapu_init(); return true;}());
     }
 public:
     ~ruapu() = default;
